@@ -9,6 +9,7 @@
     "name": { "type": "string", "minLength": 1, "maxLength": 80 },
     "version": { "type": "integer", "minimum": 1 },
     "template": { "const": "new" },
+    "replaceMissing": { "type": "boolean" },
     "colors": {
       "type": "object",
       "properties": {

@@ -425,7 +425,8 @@ $("theme-form").addEventListener("submit", async (event) => {
     const mediaInputs = [...document.querySelectorAll('[data-resource][type="file"]')];
     const uploadedMedia = mediaInputs.filter((input) => input.files[0]).length;
     const missingMedia = mediaInputs.length - uploadedMedia;
-    if (missingMedia && !window.confirm(`${uploadedMedia} of ${mediaInputs.length} media slots contain files. The other ${missingMedia} slots will keep the machine's existing Huaxin artwork. Continue?`)) {
+    const missingBehavior = $("replace-missing").checked ? "will be hidden" : "will keep the machine's existing Huaxin artwork";
+    if (missingMedia && !window.confirm(`${uploadedMedia} of ${mediaInputs.length} media slots contain files. The other ${missingMedia} slots ${missingBehavior}. Continue?`)) {
       $("message").textContent = "Export cancelled.";
       return;
     }
@@ -466,7 +467,7 @@ $("theme-form").addEventListener("submit", async (event) => {
         };
       }
     }
-    const manifest = { formatVersion: 1, id: $("theme-id").value, name: $("theme-name").value, version: Number($("theme-version").value), template: "new", resources, labels, layout };
+    const manifest = { formatVersion: 1, id: $("theme-id").value, name: $("theme-name").value, version: Number($("theme-version").value), template: "new", replaceMissing: $("replace-missing").checked, resources, labels, layout };
     files.unshift({ name: "manifest.json", data: encoder.encode(JSON.stringify(manifest, null, 2)) });
     const blob = makeZip(files);
     if (blob.size > 100 * 1024 * 1024) throw new Error("Complete package exceeds 100 MB");
@@ -475,7 +476,7 @@ $("theme-form").addEventListener("submit", async (event) => {
     link.download = `${manifest.id}-v${manifest.version}.ice-theme`;
     link.click();
     URL.revokeObjectURL(link.href);
-    $("message").textContent = `Exported ${link.download}: ${uploadedMedia} media files, ${missingMedia} Huaxin fallback slots.`;
+    $("message").textContent = `Exported ${link.download}: ${uploadedMedia} media files, ${missingMedia} empty slots ${missingBehavior}.`;
   } catch (error) { $("message").textContent = error.message; }
 });
 

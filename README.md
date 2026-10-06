@@ -23,7 +23,7 @@ The exported file is a ZIP-compatible `.ice-theme` package containing:
 - New-theme resource colors and wording
 - 1080 x 1920 canvas metadata
 
-Uploaded media, colors, and wording are supported by the current APK. Canvas movement and custom layers are exported as design metadata but are not applied by the APK yet. Empty media slots retain the machine's existing Huaxin artwork, and the editor warns before exporting such a package.
+Uploaded media, colors, and wording are supported by the current APK. Canvas movement and custom layers are exported as design metadata but are not applied by the APK yet. **Hide original machine media** makes empty welcome product and promotion slots blank instead of retaining Huaxin or server media.
 
 ## Validate a package
 
