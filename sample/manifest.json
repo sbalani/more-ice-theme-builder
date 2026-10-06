@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "id": "sample-rose",
+  "name": "Sample Rose",
+  "version": 1,
+  "template": "new",
+  "resources": {
+    "color_new_common_primary": "#C94F7C",
+    "color_new_common_title": "#FFFFFF",
+    "color_new_welcome_slogan": "#C94F7C",
+    "color_new_classic_slogan": "#18243C",
+    "color_new_diy_title": "#18243C",
+    "color_new_order_title": "#18243C",
+    "color_new_payment_info": "#18243C",
+    "color_new_warn_msg": "#18243C",
+    "color_new_out_slogan": "#18243C"
+  },
+  "labels": {
+    "welcome_new_top": "SAMPLE ROSE",
+    "welcome_new_slogan": "Made locally, served beautifully",
+    "welcome_new_bottom": "START ORDER",
+    "key_classic_new_slogan_key": "Choose your favorite",
+    "key_diy_new_slogan_key": "Make it yours",
+    "order_new_slogan_key": "Review your order",
+    "process_new_slogan": "Preparing your order"
+  }
+}
