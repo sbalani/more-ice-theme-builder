@@ -21,9 +21,11 @@ The exported file is a ZIP-compatible `.ice-theme` package containing:
 - `manifest.json`
 - Uploaded images or MP4 promotion media under `images/`
 - New-theme resource colors and wording
-- 1080 x 1920 canvas metadata
+- Fixed-slot media, colors, and wording
 
-Uploaded media, colors, and wording are supported by the current APK. Canvas movement and custom layers are exported as design metadata but are not applied by the APK yet. **Hide original machine media** makes empty welcome product and promotion slots blank instead of retaining Huaxin or server media.
+The preview uses the APK's fixed New-theme slots. Uploaded media, colors, and wording are applied to those same slots; empty media slots retain the machine's existing artwork. Free-position layers are intentionally not offered because the APK does not support them.
+
+The welcome product slot can use the machine's main product, live product position 1-7, or an uploaded custom image. A custom upload wins and may be a product shot, logo, or other artwork.
 
 ## Validate a package
 

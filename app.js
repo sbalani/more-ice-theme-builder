@@ -117,7 +117,7 @@ function buildEditor() {
     section.id = `fields-${id}`;
     section.className = "screen-fields";
     section.hidden = id !== state.active;
-    section.innerHTML = `${screen.labels ? `<fieldset class="field-grid"><legend>${screen.name} wording</legend>${screen.labels.map(([key, label, value]) => `<label>${label}<input data-label="${key}" type="text" value="${value}" maxlength="120"></label>`).join("")}</fieldset>` : ""}<fieldset class="field-grid"><legend>${screen.name} media</legend>${screen.images.map(([key, label, accept]) => `<label class="wide">${label}<input id="${key}" data-resource="${key}" type="file" accept="${accept || "image/png,image/jpeg,image/webp"}"></label>`).join("")}<p class="hint">Optional. Unset files continue using the app's backend data or original New-theme artwork.</p></fieldset><fieldset class="field-grid"><legend>${screen.name} colors</legend>${screen.colors.map(([key, label]) => { const color = defaultColor(key); return `<label>${label}<span class="color-control"><input id="${key}-${id}" data-resource="${key}" type="color" value="${color}"><input data-color-text="${key}" type="text" value="${color}" pattern="#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?" maxlength="9" spellcheck="false"></span></label>`; }).join("")}</fieldset>`;
+    section.innerHTML = `${screen.labels ? `<fieldset class="field-grid"><legend>${screen.name} wording</legend>${screen.labels.map(([key, label, value]) => `<label>${label}<input data-label="${key}" type="text" value="${value}" maxlength="120"></label>`).join("")}</fieldset>` : ""}<fieldset class="field-grid"><legend>${screen.name} media</legend>${id === "welcome" ? `<label class="wide">Product shown in the welcome product slot<select id="welcome-product-position"><option value="0">Machine's main product</option>${[1, 2, 3, 4, 5, 6, 7].map((position) => `<option value="${position}">Live product position ${position}</option>`).join("")}</select></label>` : ""}${screen.images.map(([key, label, accept]) => `<label class="wide">${key === "ui_new_welcome_product" ? "Custom welcome product image (overrides live product selection)" : label}<input id="${key}" data-resource="${key}" type="file" accept="${accept || "image/png,image/jpeg,image/webp"}"></label>`).join("")}<p class="hint">Optional. An uploaded custom product can be any artwork, including a logo. Other unset files continue using the app's backend data or original New-theme artwork.</p></fieldset><fieldset class="field-grid"><legend>${screen.name} colors</legend>${screen.colors.map(([key, label]) => { const color = defaultColor(key); return `<label>${label}<span class="color-control"><input id="${key}-${id}" data-resource="${key}" type="color" value="${color}"><input data-color-text="${key}" type="text" value="${color}" pattern="#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?" maxlength="9" spellcheck="false"></span></label>`; }).join("")}</fieldset>`;
     $("screen-fields").append(section);
   }
   document.querySelectorAll("[data-resource]").forEach((input) => input.addEventListener("input", () => {
@@ -134,6 +134,7 @@ function buildEditor() {
     updatePreview();
   }));
   document.querySelectorAll("[data-label]").forEach((input) => input.addEventListener("input", updatePreview));
+  $("welcome-product-position").addEventListener("change", updatePreview);
   activate(state.active);
 }
 
@@ -171,7 +172,7 @@ function updatePreview() {
   for (const [id, layer] of layers) {
     if (layer.visible === false) continue;
     const element = document.createElement("div");
-    element.className = `layout-layer ${layer.kind} ${state.selected === id ? "selected" : ""}`;
+    element.className = `layout-layer ${layer.kind}`;
     element.dataset.layer = id;
     setLayerGeometry(element, layer);
     element.style.fontSize = `${(layer.fontSize || defaultFontSize(layer)) * preview.clientWidth / 1080}px`;
@@ -182,11 +183,6 @@ function updatePreview() {
     if (layer.kind === "button" || layer.kind === "header" || layer.kind === "shape") element.style.backgroundColor = layer.fill || primary;
     if (layer.borderColor || layer.kind === "shape") element.style.borderColor = layer.borderColor || layer.color || text;
     element.innerHTML = layerContent(layer, id);
-    const handle = document.createElement("span");
-    handle.className = "resize-handle";
-    element.append(handle);
-    element.addEventListener("pointerdown", startLayerPointer);
-    element.addEventListener("dblclick", editLayerDirectly);
     preview.append(element);
   }
   updateInspector();
@@ -204,6 +200,10 @@ function layerContent(layer, id) {
       return file.type === "video/mp4" || file.name.toLowerCase().endsWith(".mp4")
         ? `<video autoplay muted loop playsinline src="${url}"></video>`
         : `<img src="${url}" alt="">`;
+    }
+    if (layer.media === "ui_new_welcome_product") {
+      const position = Number($("welcome-product-position").value);
+      return position ? `LIVE PRODUCT POSITION ${position}` : "MACHINE MAIN PRODUCT";
     }
   }
   if (layer.kind === "cards") return `<span>${escapeHtml(layer.text || "ITEM")} 1</span><span>${escapeHtml(layer.text || "ITEM")} 2</span>`;
@@ -396,19 +396,6 @@ $("replace-background").addEventListener("click", () => {
   if (key) resourceInput(key, "file", state.active)?.click();
 });
 
-window.addEventListener("keydown", (event) => {
-  if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName) || document.activeElement.contentEditable === "true") return;
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") { event.preventDefault(); (event.shiftKey ? $("redo") : $("undo")).click(); return; }
-  if (event.key === "Delete" || event.key === "Backspace") { event.preventDefault(); $("delete-layer").click(); return; }
-  const movement = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
-  if (!movement) return;
-  event.preventDefault(); checkpoint();
-  const layer = state.layouts[state.active][state.selected], amount = event.shiftKey ? 10 : 1;
-  layer.x = clamp(layer.x + movement[0] * amount, 0, 1080 - layer.w);
-  layer.y = clamp(layer.y + movement[1] * amount, 0, 1920 - layer.h);
-  updatePreview();
-});
-
 function previewUrl(key, file) {
   if (state.imageUrls[key]) URL.revokeObjectURL(state.imageUrls[key]);
   return state.imageUrls[key] = URL.createObjectURL(file);
@@ -425,7 +412,7 @@ $("theme-form").addEventListener("submit", async (event) => {
     const mediaInputs = [...document.querySelectorAll('[data-resource][type="file"]')];
     const uploadedMedia = mediaInputs.filter((input) => input.files[0]).length;
     const missingMedia = mediaInputs.length - uploadedMedia;
-    const missingBehavior = $("replace-missing").checked ? "will be hidden" : "will keep the machine's existing Huaxin artwork";
+    const missingBehavior = "will keep the machine's existing Huaxin artwork";
     if (missingMedia && !window.confirm(`${uploadedMedia} of ${mediaInputs.length} media slots contain files. The other ${missingMedia} slots ${missingBehavior}. Continue?`)) {
       $("message").textContent = "Export cancelled.";
       return;
@@ -447,27 +434,7 @@ $("theme-form").addEventListener("submit", async (event) => {
       files.push({ name: path, data: new Uint8Array(await file.arrayBuffer()) });
     }
     document.querySelectorAll("[data-label]").forEach((input) => { labels[input.dataset.label] = input.value; });
-    const layout = {};
-    for (const [screen, layers] of Object.entries(state.layouts)) {
-      layout[screen] = {};
-      for (const [id, layer] of Object.entries(layers)) {
-        layout[screen][id] = {
-          type: layer.kind,
-          x: layer.x, y: layer.y, width: layer.w, height: layer.h,
-          visible: layer.visible !== false,
-          z: layer.z || 0,
-          text: layer.label ? labelValue(layer.label) : layer.text || "",
-          fontSize: layer.fontSize || defaultFontSize(layer),
-          color: layer.color || "",
-          fill: layer.fill || "",
-          radius: layer.radius || 0,
-          opacity: layer.opacity ?? 1,
-          rotation: layer.rotation || 0,
-          media: layer.media || ""
-        };
-      }
-    }
-    const manifest = { formatVersion: 1, id: $("theme-id").value, name: $("theme-name").value, version: Number($("theme-version").value), template: "new", replaceMissing: $("replace-missing").checked, resources, labels, layout };
+    const manifest = { formatVersion: 1, id: $("theme-id").value, name: $("theme-name").value, version: Number($("theme-version").value), template: "new", welcomeProductPosition: Number($("welcome-product-position").value), resources, labels };
     files.unshift({ name: "manifest.json", data: encoder.encode(JSON.stringify(manifest, null, 2)) });
     const blob = makeZip(files);
     if (blob.size > 100 * 1024 * 1024) throw new Error("Complete package exceeds 100 MB");

@@ -45,6 +45,9 @@ def validate(path):
             raise ValueError("invalid theme name")
         if not isinstance(manifest.get("version"), int) or manifest["version"] < 1:
             raise ValueError("invalid version")
+        position = manifest.get("welcomeProductPosition", 0)
+        if not isinstance(position, int) or not 0 <= position <= 7:
+            raise ValueError("invalid welcome product position")
         for key, asset in manifest.get("assets", {}).items():
             if asset not in names:
                 raise ValueError(f"missing asset {key}: {asset}")

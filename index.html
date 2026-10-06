@@ -11,8 +11,8 @@
     <section class="editor">
       <p class="eyebrow">MORE ICE / LOCAL TOOL</p>
       <h1>Theme Builder</h1>
-      <p class="intro">Customize the Huaxin New-theme asset slots and export one USB-ready package. Nothing is uploaded.</p>
-      <p class="hint"><strong>Current APK support:</strong> uploaded media, colors, and wording use the original fixed screen positions. Empty media slots keep the machine's existing Huaxin artwork. Canvas movement and custom layers are mockups only and are not applied by the APK yet.</p>
+      <p class="intro">Customize the supported Huaxin New-theme slots and export one USB-ready package. Nothing is uploaded.</p>
+      <p class="hint"><strong>Fixed-slot preview:</strong> media, colors, and wording use these fixed positions in the APK. Empty media slots keep the machine's existing artwork.</p>
 
       <form id="theme-form">
         <fieldset class="identity">
@@ -20,7 +20,6 @@
           <label>Theme ID <input id="theme-id" value="my-brand" pattern="[a-z0-9][a-z0-9._-]{1,63}" required></label>
           <label>Name <input id="theme-name" value="My Brand" maxlength="80" required></label>
           <label>Version <input id="theme-version" type="number" value="1" min="1" required></label>
-          <label class="wide replace-control"><span><input id="replace-missing" type="checkbox" checked> Hide original machine media when a theme slot is empty</span></label>
         </fieldset>
 
         <nav id="screen-tabs" aria-label="Customer screen"></nav>
@@ -33,10 +32,10 @@
 
     <section class="preview-shell">
       <div class="preview-header">
-        <span class="preview-label">LIVE PREVIEW / PORTRAIT</span>
+        <span class="preview-label">FIXED-SLOT PREVIEW / PORTRAIT</span>
         <strong id="preview-screen">WELCOME</strong>
       </div>
-      <div class="canvas-toolbar" aria-label="Canvas tools">
+      <div class="canvas-toolbar unsupported-layout-controls" aria-hidden="true">
         <button id="undo" type="button" title="Undo">Undo</button>
         <button id="redo" type="button" title="Redo">Redo</button>
         <span></span>
@@ -52,7 +51,7 @@
       </div>
       <div class="workspace">
         <div id="preview" class="preview" aria-label="1080 by 1920 layout canvas"></div>
-        <aside class="layout-inspector">
+        <aside class="layout-inspector unsupported-layout-controls" aria-hidden="true">
           <label>Layer <select id="layer-select"></select></label>
           <div class="geometry-grid">
             <label>X <input id="layer-x" type="number" min="0" max="1080"></label>

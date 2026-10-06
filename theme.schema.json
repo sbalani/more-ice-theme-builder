@@ -9,7 +9,7 @@
     "name": { "type": "string", "minLength": 1, "maxLength": 80 },
     "version": { "type": "integer", "minimum": 1 },
     "template": { "const": "new" },
-    "replaceMissing": { "type": "boolean" },
+    "welcomeProductPosition": { "type": "integer", "minimum": 0, "maximum": 7 },
     "colors": {
       "type": "object",
       "properties": {
@@ -40,34 +40,6 @@
       "description": "Complete New-theme resource overrides keyed by the original app's UI resource keys.",
       "type": "object",
       "additionalProperties": { "type": "string", "maxLength": 240 }
-    },
-    "layout": {
-      "description": "Per-screen layer geometry in a 1080 by 1920 coordinate system.",
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object",
-          "required": ["type", "x", "y", "width", "height", "visible"],
-          "properties": {
-            "type": { "enum": ["text", "image", "promotion", "button", "header", "cards", "steps", "shape"] },
-            "x": { "type": "number", "minimum": 0, "maximum": 1080 },
-            "y": { "type": "number", "minimum": 0, "maximum": 1920 },
-            "width": { "type": "number", "minimum": 20, "maximum": 1080 },
-            "height": { "type": "number", "minimum": 20, "maximum": 1920 },
-            "visible": { "type": "boolean" },
-            "z": { "type": "number" },
-            "text": { "type": "string", "maxLength": 240 },
-            "fontSize": { "type": "number", "minimum": 8, "maximum": 240 },
-            "color": { "type": "string" },
-            "fill": { "type": "string" },
-            "radius": { "type": "number", "minimum": 0, "maximum": 540 },
-            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
-            "rotation": { "type": "number", "minimum": -180, "maximum": 180 },
-            "media": { "type": "string", "maxLength": 80 }
-          }
-        }
-      }
     }
   }
 }
